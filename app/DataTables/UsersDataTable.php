@@ -90,7 +90,8 @@ class UsersDataTable extends DataTable
                     ->parameters([
 
                         'dom'          => 'Bfrtip',
-                        'buttons'      => ['export', 'pageLength', 'print', 'reset', 'reload'],
+                        // 'buttons'      => ['export', 'pageLength', 'print', 'reset', 'reload'],
+                        'buttons'      => ['pageLength', 'excel', 'csv', 'pdf', 'print', 'reset', 'reload'],
                         'select'       => false,
                         'order'        => [[0, 'asc']],
 
@@ -101,6 +102,11 @@ class UsersDataTable extends DataTable
                                             [ 10, 25, 50, -1 ],
                                             [ '10 filas', '25 filas', '50 filas', 'Todos' ]
                                         ],
+
+                        // Para traducir al español
+                        'language' => (app()->getLocale() == 'es') ? \Illuminate\Support\Facades\Config::get('dtespanol') : '',
+                        // Tambien se puede hacer de esta manera
+                        // 'language' => ['url' => '//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json'],
                         
                     ]);
     }
