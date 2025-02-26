@@ -22,8 +22,41 @@ class UsersDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'users.action')
-            ->setRowId('id');
+
+        // date - created_at
+        ->addColumn('created_at', function($query){
+            $date = date( 'd M Y', strtotime($query->created_at) );
+            return $date;
+        })
+
+        // date - updated_at
+        ->addColumn('updated_at', function($query){
+            $date = date( 'd M Y', strtotime($query->updated_at) );
+            return $date;
+        })
+
+        // date - email_verified_at
+        ->addColumn('email_verified_at', function($query){
+            $date = date( 'd M Y', strtotime($query->email_verified_at) );
+            return $date;
+        })
+
+
+        // action
+        ->addColumn('action', function($query){
+
+            // $view = "<a href='".route('admin.orders.show', $query->id)."' class='btn btn-primary'><i class='fas fa-eye'></i></a>";
+
+            $view = "<a href='#' class='btn btn-primary'><i class='fas fa-eye'></i></a>";
+
+            $delete = "<a href='#' class='btn btn-danger delete-item ml-2'><i class='fas fa-trash'></i></a>";
+
+            return $view . $delete;
+        })
+
+        ->rawColumns(['action'])
+
+        ->setRowId('id');
     }
 
     /**
@@ -43,16 +76,32 @@ class UsersDataTable extends DataTable
                     ->setTableId('users-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                    ->dom('Bfrtip')
+                    // ->dom('Bfrtip')
                     ->orderBy(1)
                     ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
+                    // ->buttons([
+                    //     Button::make('excel'),
+                    //     Button::make('csv'),
+                    //     Button::make('pdf'),
+                    //     Button::make('print'),
+                    //     Button::make('reset'),
+                    //     Button::make('reload')
+                    // ]);
+                    ->parameters([
+
+                        'dom'          => 'Bfrtip',
+                        'buttons'      => ['export', 'pageLength', 'print', 'reset', 'reload'],
+                        'select'       => false,
+                        'order'        => [[0, 'asc']],
+
+                        // 'pageLength'   => 10,
+
+                        // Configure the drop down options.
+                        'lengthMenu'   => [
+                                            [ 10, 25, 50, -1 ],
+                                            [ '10 filas', '25 filas', '50 filas', 'Todos' ]
+                                        ],
+                        
                     ]);
     }
 
@@ -64,15 +113,19 @@ class UsersDataTable extends DataTable
         return [
             
             Column::make('id'),
-            Column::make('name'),
-            Column::make('email'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+
+            Column::make('name')->title(__('Nombre')),
+            Column::make('email')->title(__('Correo')),
+
+            Column::make('created_at')->title(__('Creado')),
+            Column::make('updated_at')->title(__('Actualizado')),
+            Column::make('email_verified_at')->title(__('Verificado')),
 
             Column::computed('action')
                   ->exportable(false)
                   ->printable(false)
-                  ->width(150)
+                  ->width(200)
+                  ->title(__('Acción'))
                   ->addClass('text-center'),
         ];
     }
